@@ -59,12 +59,11 @@ public class TutorialController {
 		}
 	}
 
-
 	@PostMapping("/tutorials")
 	public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
 		try {
 			Tutorial _tutorial = tutorialRepository
-					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(),  false));
+					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false));
 			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
@@ -86,13 +85,13 @@ public class TutorialController {
 		}
 	}
 
-//HttpStatus
+	// HttpStatus
 	@DeleteMapping("/tutorials/{id}")
 	public ResponseEntity<String> deleteTutorial(@PathVariable("id") long id) {
 		try {
 			tutorialRepository.deleteById(id);
-				return new ResponseEntity<>("Tutorials DELETE!! ",HttpStatus.NO_CONTENT);
-			} catch (Exception e) {
+			return new ResponseEntity<>("Tutorials DELETE!! ", HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 		}
 	}
@@ -121,5 +120,51 @@ public class TutorialController {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
 		}
 	}
+
+	// Buscar por TITULO
+	public List<Tutorial> obtenerTutorialPorTitulo(String title) {
+		return this.tutorialRepository.findByTitle(title);
+	}
+
+	// Buscar por TITULO
+	/*
+	public Optional<Tutorial> obtenerTutorialPorTituloOP(String title) {
+		return this.tutorialRepository.findByTitleOptional(title);
+	}*/
+
+	// Eliminar tutorial por TITULO
+	@DeleteMapping("/tutorials/eliminar/{title}")
+	public ResponseEntity<String> deleteTutorial(@PathVariable("title") String title) {
+		try {
+			Iterator it = obtenerTutorialPorTitulo(title).iterator();
+			while (it.hasNext()) {
+				Tutorial tutarial = (Tutorial) it.next();
+				Long idtuto = tutarial.getId();
+				tutorialRepository.deleteById(idtuto);
+			}
+			return new ResponseEntity<>("Tutorials DELETE!! ", HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+
+	// Actualizar el tutorial por titulos
+	/*
+	@PutMapping("/tutorials/buscar/{title}")
+	public ResponseEntity<Tutorial> updateTutorial(@PathVariable("title") String title,
+			@RequestBody Tutorial tutorial) {
+		Optional<Tutorial> tutorialData = tutorialRepository.findByTitleOptional(title);
+
+		if (tutorialData.isPresent()) {
+			Tutorial _tutorial = tutorialData.get();
+			_tutorial.setTitle(tutorial.getTitle());
+			_tutorial.setDescription(tutorial.getDescription());
+			_tutorial.setPublished(tutorial.isPublished());
+			return new ResponseEntity<>(tutorialRepository.save(_tutorial),
+					HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}*/
 
 }
