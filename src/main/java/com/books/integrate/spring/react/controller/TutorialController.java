@@ -126,12 +126,6 @@ public class TutorialController {
 		return this.tutorialRepository.findByTitle(title);
 	}
 
-	// Buscar por TITULO
-	/*
-	public Optional<Tutorial> obtenerTutorialPorTituloOP(String title) {
-		return this.tutorialRepository.findByTitleOptional(title);
-	}*/
-
 	// Eliminar tutorial por TITULO
 	@DeleteMapping("/tutorials/eliminar/{title}")
 	public ResponseEntity<String> deleteTutorial(@PathVariable("title") String title) {
@@ -149,11 +143,29 @@ public class TutorialController {
 	}
 
 	// Actualizar el tutorial por titulos
+
+	@PutMapping("/tutorials/buscar/{title}")
+	public ResponseEntity<Tutorial> updateTutorial(@PathVariable("title") String title,
+			@RequestBody Tutorial tutorial){
+			Optional<Tutorial> tutorial2 = tutorialRepository.findBytitle(title);
+
+			if (tutorial2.isPresent()) {
+				Tutorial _tutorial = tutorial2.get();
+				_tutorial.setTitle(tutorial.getTitle());
+				_tutorial.setDescription(tutorial.getDescription());
+				_tutorial.setPublished(tutorial.isPublished());
+				return new ResponseEntity<>(tutorialRepository.save(_tutorial),
+						HttpStatus.OK);
+			}else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+		}
+
 	/*
 	@PutMapping("/tutorials/buscar/{title}")
 	public ResponseEntity<Tutorial> updateTutorial(@PathVariable("title") String title,
 			@RequestBody Tutorial tutorial) {
-		Optional<Tutorial> tutorialData = tutorialRepository.findByTitleOptional(title);
+		Optional<Tutorial> tutorialData = tutorialRepository.findByTitle(title);
 
 		if (tutorialData.isPresent()) {
 			Tutorial _tutorial = tutorialData.get();
